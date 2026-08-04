@@ -50,11 +50,11 @@ This creates a local virtual environment and installs dependencies from pyprojec
 
 You can then start Jupyter:
 
-    uv run jupyter lab pre-load-cloudinary.ipynb
+    uv run jupyter lab preload-cloudinary.ipynb
 
 or
 
-    uv run jupyter notebook pre-load-cloudinary.ipynb
+    uv run jupyter notebook preload-cloudinary.ipynb
 
 Akamai Credentials Setup
 

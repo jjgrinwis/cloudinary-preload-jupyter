@@ -12,3 +12,6 @@ wheels/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
+
+# ignore any .csv files with videos
+*.csv

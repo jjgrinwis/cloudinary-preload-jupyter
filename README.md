@@ -1,24 +1,23 @@
 Cloudinary Preload Notebook
 
-This project contains a Jupyter notebook that:
+This project contains two Jupyter notebooks for preloading videos into Cloudinary:
 
-- Queries Akamai Reporting API for IVM video URLs.
-- Extracts hostname and path from each returned URL.
-- Sends HEAD requests for sample URLs to trigger downstream preload checks.
-- Supports Akamai staging override for validation.
+- `preload-cloudinary.ipynb` queries the Akamai Reporting API for IVM video URLs.
+- `preload-cloudinary-csv.ipynb` loads video URLs from a CSV file without calling the API.
+- Both notebooks send HEAD requests through the configured Akamai delivery path to trigger downstream preload checks.
 
 Project Files
 
-- pre-load-cloudinary.ipynb: Main notebook workflow.
+- preload-cloudinary.ipynb: API-based notebook workflow.
+- preload-cloudinary-csv.ipynb: CSV-based notebook workflow.
+- Top Hits Videos.csv: Input file for the CSV-based workflow.
 - pyproject.toml: Project metadata and dependencies.
-- main.py: Optional local Python entry file.
 
 Requirements
 
 - Python 3.14 or newer.
-- Access to an Akamai API client configured in ~/.edgerc.
-- Reporting API permissions for your API client.
 - uv package manager.
+- For `preload-cloudinary.ipynb` only: an Akamai API client configured in `~/.edgerc` with Reporting API permissions.
 
 Install uv
 
@@ -56,6 +55,20 @@ or
 
     uv run jupyter notebook preload-cloudinary.ipynb
 
+## CSV-Based Notebook
+
+Use `preload-cloudinary-csv.ipynb` when the Reporting API is unavailable or you already have a URL list.
+
+1. Place `Top Hits Videos.csv` in the project root beside the notebook.
+2. Open the notebook with:
+
+   uv run jupyter lab preload-cloudinary-csv.ipynb
+
+3. Run the cells in order. The loader reads the first CSV field as a video URL or hostname/path; any additional columns are ignored. The notebook also handles exports that quote an entire row.
+4. The preload cell sends HEAD requests to the first 20 entries by default, using its `STAGING_IP` value with `curl --resolve`. Change `MAX_ITEMS` in that cell to process a different number of entries.
+
+The CSV workflow does not require EdgeGrid credentials or Akamai Reporting API permissions. The URL host and path are used to build the request; keep the staging IP configured in the notebook appropriate for your environment.
+
 Akamai Credentials Setup
 
 1. Ensure ~/.edgerc exists and contains the section you want to use.
@@ -85,9 +98,9 @@ Important Notes About Environment Variables and Jupyter
 - If you export AKAMAI_EDGEGRID_SECTION or AKAMAI_ACCOUNT_SWITCH_KEY after the kernel is already running, restart the notebook kernel.
 - If needed, set account_switch_key inside a notebook cell as a temporary override for that session.
 
-Run the Notebook
+Run the API-Based Notebook
 
-1. Open pre-load-cloudinary.ipynb.
+1. Open `preload-cloudinary.ipynb`.
 2. Run cells in order.
 3. Verify the EdgeGrid setup cell prints the expected host.
 4. Run the report cell to build URL targets.
